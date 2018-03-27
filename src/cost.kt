@@ -7,6 +7,7 @@ fun getDeleteCost(): Int {
 }
 
 fun getLetterCost(a: Char, b: Char): Int {
+    //  Todo rework this - a letter that is 2 columns & 2 rows away should have a higher cost
     return when (letterDistance(a, b)) {
         0 -> 0
         1 -> 1

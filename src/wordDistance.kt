@@ -13,7 +13,6 @@ fun distance(word1: String, word2: String): Int {
             }
         }
     }
-    printMatrix(matrix)
     return matrix[rowWord.length][columnWord.length]
 }
 
