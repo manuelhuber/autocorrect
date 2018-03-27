@@ -3,8 +3,10 @@ import java.io.InputStream
 
 class Autocomplete {
     var dictionary: Map<String, Int> = loadDictionary()!!
+    val wordDistanceTree = WordDistanceTree()
 
-    fun topThreeSuggestions(input: String): List<String> {
+
+    fun topThreeSuggestions(input: String, recVersion: Boolean): List<String> {
         val sortPairs = { pairA: Pair<String, Int>, pairB: Pair<String, Int> ->
             if (pairA.second == pairB.second) {
                 dictionary[pairA.first]!! - dictionary[pairB.first]!!
@@ -14,7 +16,11 @@ class Autocomplete {
         }
 
         return dictionary.keys.filter { s -> Math.abs(s.length - input.length) < 4 }
-                .map { s -> Pair(s, distance(s, input)) }
+                .map { s ->
+                    if (recVersion) {
+                        Pair(s, wordDistanceTree.distance(input, s))
+                    } else Pair(s, distance(s, input))
+                }
                 .sortedWith(Comparator(sortPairs))
                 .take(3)
                 .map { pair -> pair.first }
