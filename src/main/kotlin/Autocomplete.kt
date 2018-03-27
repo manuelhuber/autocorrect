@@ -6,7 +6,7 @@ class Autocomplete {
     val wordDistanceTree = WordDistanceTree()
 
 
-    fun topThreeSuggestions(input: String, recVersion: Boolean): List<String> {
+    fun topThreeSuggestions(input: String, recVersion: Boolean): List<Pair<String, Int>> {
         val sortPairs = { pairA: Pair<String, Int>, pairB: Pair<String, Int> ->
             if (pairA.second == pairB.second) {
                 dictionary[pairA.first]!! - dictionary[pairB.first]!!
@@ -23,7 +23,6 @@ class Autocomplete {
                 }
                 .sortedWith(Comparator(sortPairs))
                 .take(3)
-                .map { pair -> pair.first }
     }
 
 
