@@ -52,8 +52,9 @@ class WordDistanceTree {
         val cost = when {
             cachedValue != -1 -> thisRow.costs[column]
             else -> {
-                val top = calcCellRec(thisRow.previousRow!!, rowWord, column) + getDeleteCost()
-                val left = calcCellRec(thisRow, rowWord, column - 1) + getInsertCost()
+                // TODO: make this cost zero if we are at the end of the rowWord to create prediction ???
+                val top = calcCellRec(thisRow.previousRow!!, rowWord, column) + getInsertCost()
+                val left = calcCellRec(thisRow, rowWord, column - 1) + getDeleteCost()
                 val diag = calcCellRec(thisRow.previousRow, rowWord, column - 1) + getLetterCost(thisRow.char, rowWord[column - 1])
                 Math.min(Math.min(top, left), diag)
             }
