@@ -65,9 +65,9 @@ class WordDistanceTree {
 
     private fun generateRow(char: Char, row: Int, previousRow: Row): Row {
         val costs = mutableListOf(row * getInsertCost())
+        // TODO do this dynamically to reduce memory usage & have no limit on wordlength
         for (i in 1..30) {
             costs.add(-1)
-
         }
         return Row(char, costs, previousRow)
     }
