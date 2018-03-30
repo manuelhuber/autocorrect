@@ -1,11 +1,13 @@
-import rx.observables.SwingObservable
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.*
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
+
 
 class App : JPanel(GridBagLayout()) {
-    private var textField: JTextField = JTextField(20)
-    private var textArea: JTextArea = JTextArea(5, 20)
+    private var textField: JTextField = JTextField(100)
+    private var textArea: JTextArea = JTextArea(10, 100)
     private var autoCorrect: Autocorrect = Autocorrect()
 
     init {
@@ -26,12 +28,23 @@ class App : JPanel(GridBagLayout()) {
         constraints.weighty = 1.0
 
         add(JScrollPane(textArea), constraints)
+        textField.document.addDocumentListener(object : DocumentListener {
+            override fun changedUpdate(e: DocumentEvent?) {
+                showCorrections()
+            }
 
-        SwingObservable.fromKeyEvents(textField).subscribe { showCorrections() }
+            override fun insertUpdate(e: DocumentEvent?) {
+                showCorrections()
+            }
+
+            override fun removeUpdate(e: DocumentEvent?) {
+                showCorrections()
+            }
+        })
     }
 
     private fun showCorrections() {
-        textArea.text = autoCorrect.topThreeSuggestions(textField.text).map { (first) -> first }.toString()
+        textArea.text = autoCorrect.getSuggestions(textField.text, 2.0, 3).toString()
     }
 
     companion object {
