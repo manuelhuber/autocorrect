@@ -1,5 +1,7 @@
+import model.Suggestion
 import java.io.BufferedReader
 import java.io.File
+import java.util.*
 
 /**
  * Generates corrections for the given word based on a dictionary
@@ -9,23 +11,39 @@ class Autocorrect {
     private val wordDistanceTree = WordDistanceTree()
 
     /**
-     * Generates 3 suggestions for the given input
+     * Generates autoCorrect / autocomplete suggestions for the given input
+     *
+     * @param input word for which to suggests corrections / completions
+     * @param m max cost
+     * @param numberOfSuggestions
+     * @param lambda math stuff
+     * @param z math stuff
      * @return a list of Pair<suggestedWord, editDistance>
      */
-    fun topThreeSuggestions(input: String): List<Pair<String, Int>> {
-        val sortPairs = { pairA: Pair<String, Int>, pairB: Pair<String, Int> ->
-            val (wordA, costA) = pairA
-            val (wordB, costB) = pairB
-            // When the words are equally as expensive compare by frequency
-            if (costA == costB) dictionary[wordA]!! - dictionary[wordB]!!
-            else costA - costB
-        }
+    fun getSuggestions(input: String,
+                       m: Double,
+                       numberOfSuggestions: Int,
+                       lambda: Double = 0.2,
+                       z: Double = 1.0): List<Suggestion> {
+        val date = Date()
+        val value = dictionary.keys
+                // Remove words that are too short
+                .filter { s -> s.length > input.length || Math.abs(s.length - input.length) < m }
+                // calculate the score
+                .map { s ->
+                    // get the distance
+                    val distance = wordDistanceTree.distance(input, s)
+                    // Do some math
+                    val score = -lambda * z * distance + Math.log(dictionary[s]!!.toDouble())
+                    Suggestion(s, score, distance, dictionary[s]!!)
+                }
+//                .filter { pair -> pair.second < m }
+                // Sort by score
+                .sortedBy(Suggestion::distance)
+                .take(numberOfSuggestions)
 
-        return dictionary.keys
-                .filter { s -> Math.abs(s.length - input.length) < 4 }
-                .map { s -> Pair(s, wordDistanceTree.distance(input, s)) }
-                .sortedWith(Comparator(sortPairs))
-                .take(3)
+        println("Duration: " + (Date().time - date.time))
+        return value
     }
 
     /**

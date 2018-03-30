@@ -18,12 +18,10 @@ class WordDistanceTree {
      * this param for the constant word. Can only contain letters
      * @param word a string containing only letters
      */
-    fun distance(input: String, word: String): Int {
+    fun distance(input: String, word: String, debug: Boolean = false): Int {
         if (input.isEmpty()) return word.length * getInsertCost()
         // Invalidate the cache if the input doesn't match
-        if (!input.startsWith(lastInput)) {
-            startingRow.next.clear()
-        }
+        if (!input.startsWith(lastInput)) startingRow.next.clear()
 
         var previousRow = startingRow
         // Make sure the first row is as long as the word
@@ -37,7 +35,9 @@ class WordDistanceTree {
             previousRow = thisRow
         }
 
+
         lastInput = input
+        if (debug) printMatrix(word)
         // Take the last value in the last row (since that's where the cost is)
         return previousRow.costs[input.length]
     }
@@ -59,21 +59,30 @@ class WordDistanceTree {
         // -1 means no value has been calculated yet
         val cachedValue = costs.getOrFill(column, { -1 })
         val rowNumber = thisRow.costs[0]
-        // This is the area of cells that is no longer valid since they were calculated with an insert cost of 0
-        val isInZeroInsertCostArea = rowNumber > rowWord.length && column >= rowWord.length
-        val useCache = cachedValue != -1 && !isInZeroInsertCostArea
+        /*
+        The last rows of the last column might have invalid data since they might have used insertCost of 0 last round
+        The first (index = 0) row & column are always safe
+         */
+        val dangerZone = Math.max(rowWord.length - 1, 1)
+        val isCacheInvalid = thisRow.dirty && (rowNumber >= dangerZone && column >= dangerZone)
+        // cachedValue of -1 means there is no cached value
+        val useCache = !isCacheInvalid && cachedValue != -1
 
         costs[column] =
                 if (useCache) cachedValue
                 else {
                     // If the input is complete make insertion costs zero to allow for word prediction
-                    val insertCost = if (column == rowWord.length) 0 else getInsertCost()
+                    val insertCost = if (column == rowWord.length) {
+                        thisRow.dirty = true
+                        0
+                    } else getInsertCost()
                     val top = calcCellRecursively(thisRow.previousRow!!, rowWord, column) + insertCost
                     val left = calcCellRecursively(thisRow, rowWord, column - 1) + getDeleteCost()
                     val diag = calcCellRecursively(thisRow.previousRow, rowWord, column - 1) +
                             getLetterCost(thisRow.char, rowWord[column - 1])
                     Math.min(Math.min(top, left), diag)
                 }
+        thisRow.dirty = false
         return costs[column]
     }
 
@@ -83,6 +92,24 @@ class WordDistanceTree {
     private fun generateRow(char: Char, row: Int, previousRow: Row): Row {
         val costs = mutableListOf(row * getInsertCost())
         return Row(char, costs, previousRow)
+    }
+
+    private fun printMatrix(word: String) {
+        println()
+        println()
+        print("    ")
+        lastInput.chars().forEach({ value -> print("  " + value.toChar()) })
+        println()
+        print("  ")
+        var row = startingRow
+        row.costs.forEach { i: Int -> print(i.toString().padStart(2, '0') + " ") }
+        for (char: Char in word) {
+            println()
+            print(char)
+            print(' ')
+            row = row.next[char]!!
+            row.costs.forEach { i: Int -> print(i.toString().padStart(2, '0') + " ") }
+        }
     }
 
 }
