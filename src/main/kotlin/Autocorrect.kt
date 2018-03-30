@@ -28,7 +28,6 @@ class Autocorrect {
                 .take(3)
     }
 
-
     /**
      * Loads the file with word counts to create a map with words and their number of uses
      */
