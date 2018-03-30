@@ -23,23 +23,21 @@ class Autocorrect {
     fun getSuggestions(input: String,
                        m: Double,
                        numberOfSuggestions: Int,
-                       lambda: Double = 0.2,
+                       lambda: Double = 0.1,
                        z: Double = 1.0): List<Suggestion> {
         val date = Date()
         val value = dictionary.keys
                 // Remove words that are too short
                 .filter { s -> s.length > input.length || Math.abs(s.length - input.length) < m }
-                // calculate the score
+                // calculate the distances etc
                 .map { s ->
-                    // get the distance
                     val distance = wordDistanceTree.distance(input, s)
                     // Do some math
+                    // TODO: calculate a proper score - currently it's garbage
                     val score = -lambda * z * distance + Math.log(dictionary[s]!!.toDouble())
                     Suggestion(s, score, distance, dictionary[s]!!)
                 }
-//                .filter { pair -> pair.second < m }
-                // Sort by score
-                .sortedBy(Suggestion::distance)
+                .sortedWith(compareBy<Suggestion> { it.distance }.thenByDescending { it.occurences })
                 .take(numberOfSuggestions)
 
         println("Duration: " + (Date().time - date.time))
