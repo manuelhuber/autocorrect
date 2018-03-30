@@ -6,7 +6,7 @@ import javax.swing.*
 class App : JPanel(GridBagLayout()) {
     private var textField: JTextField = JTextField(20)
     private var textArea: JTextArea = JTextArea(5, 20)
-    private var autoCorrect: Autocomplete = Autocomplete()
+    private var autoCorrect: Autocorrect = Autocorrect()
 
     init {
         initGui()
@@ -31,7 +31,7 @@ class App : JPanel(GridBagLayout()) {
     }
 
     private fun showCorrections() {
-        textArea.text = autoCorrect.topThreeSuggestions(textField.text, true).map { (first) -> first }.toString()
+        textArea.text = autoCorrect.topThreeSuggestions(textField.text).map { (first) -> first }.toString()
     }
 
     companion object {

@@ -1,82 +1,83 @@
 import model.Row
+import util.fillMeUp
+import util.getOrFill
 
+/**
+ * Calculates the distance ( =cost) between two words
+ * Caches the results of the last distance for increased performance when querying for the same word (or an extension
+ * of the previous word)
+ */
 class WordDistanceTree {
 
     private var lastInput: String = ""
-    private val startingRow = generateStartingRow()
+    private val startingRow = Row('†', mutableListOf(), null)
 
-    fun printMatrix(word: String) {
-        println(word)
-        var row = startingRow
-        row.costs.forEach { i: Int -> print(i.toString().padStart(2, '0') + " ") }
-        for (char: Char in word) {
-            println()
-            row = row.next[char]!!
-            row.costs.forEach { i: Int -> print(i.toString().padStart(2, '0') + " ") }
-        }
-    }
-
-    fun distance(input: String, word2: String): Int {
-        val valid = input.startsWith(lastInput)
-        lastInput = input
-        if (!valid) {
+    /**
+     * Calculates the distance between 2 words
+     * @param input this will be the base for the cache - if you calculate multiple distances for the same word, use
+     * this param for the constant word. Can only contain letters
+     * @param word a string containing only letters
+     */
+    fun distance(input: String, word: String): Int {
+        // Invalidate the cache if the input doesn't match
+        if (!input.startsWith(lastInput)) {
             startingRow.next.clear()
         }
 
         var previousRow = startingRow
+        // Make sure the first row is as long as the word
+        previousRow.costs.fillMeUp(input.length, { index -> index * getDeleteCost() })
 
-        for (row: Int in 1 until word2.length + 1) {
-            val char = word2[row - 1]
-            if (!previousRow.next.containsKey(char)) {
-                previousRow.next.put(char, generateRow(char, row, previousRow))
-            }
-            val thisRow = previousRow.next[char]
-            fillRow(thisRow!!, input)
+        // Calculate the values row by row
+        for (row: Int in 1 until word.length + 1) {
+            val char = word[row - 1]
+            val thisRow = previousRow.next.getOrPut(char, { generateRow(char, row, previousRow) })
+            fillRow(thisRow, input)
             previousRow = thisRow
         }
+
+        lastInput = input
+        // Take the last value in the last row (since that's where the cost is)
         return previousRow.costs[input.length]
     }
 
-    private fun generateStartingRow(): Row {
-        var costs = listOf(0..20).flatten()
-        costs = costs.map { i -> i * getDeleteCost() }.toMutableList()
-        return Row('†', costs, null)
-    }
-
+    /**
+     * Makes sure the entire row is complete
+     */
     private fun fillRow(thisRow: Row, rowWord: String) {
-        calcCellRec(thisRow, rowWord, rowWord.length)
+        calcCellRecursively(thisRow, rowWord, rowWord.length)
     }
 
-    private fun calcCellRec(thisRow: Row, rowWord: String, column: Int): Int {
-        val cachedValue = thisRow.costs[column]
-        val cost = when {
-            cachedValue != -1 -> thisRow.costs[column]
-            else -> {
-                // TODO: make this cost zero if we are at the end of the rowWord to create prediction ???
-                val top = calcCellRec(thisRow.previousRow!!, rowWord, column) + getInsertCost()
-                val left = calcCellRec(thisRow, rowWord, column - 1) + getDeleteCost()
-                val diag = calcCellRec(thisRow.previousRow, rowWord, column - 1) + getLetterCost(thisRow.char, rowWord[column - 1])
-                Math.min(Math.min(top, left), diag)
-            }
-        }
-        thisRow.costs[column] = cost
-        return cost
+    /**
+     * Calculates the cell if need be
+     * If the cell is already filled with a valid value we don't calculate anything
+     */
+    private fun calcCellRecursively(thisRow: Row, rowWord: String, column: Int): Int {
+        val costs = thisRow.costs
+
+        // -1 means no value has been calculated yet
+        val cachedValue = costs.getOrFill(column, { -1 })
+        val useCache = cachedValue != -1
+
+        costs[column] =
+                if (useCache) cachedValue
+                else {
+                    // TODO: make this cost zero if we are at the end of the rowWord to create prediction ???
+                    val top = calcCellRecursively(thisRow.previousRow!!, rowWord, column) + getInsertCost()
+                    val left = calcCellRecursively(thisRow, rowWord, column - 1) + getDeleteCost()
+                    val diag = calcCellRecursively(thisRow.previousRow, rowWord, column - 1) +
+                            getLetterCost(thisRow.char, rowWord[column - 1])
+                    Math.min(Math.min(top, left), diag)
+                }
+        return costs[column]
     }
 
+    /**
+     * Generates a new row and initializes the costs array correctly
+     */
     private fun generateRow(char: Char, row: Int, previousRow: Row): Row {
         val costs = mutableListOf(row * getInsertCost())
-        // TODO do this dynamically to reduce memory usage & have no limit on wordlength
-        for (i in 1..30) {
-            costs.add(-1)
-        }
         return Row(char, costs, previousRow)
-    }
-
-    fun calcCell(matrix: Array<IntArray>, row: Int, column: Int, charA: Char, charB: Char): Int {
-        val top = matrix[row - 1][column] + getDeleteCost()
-        val left = matrix[row][column - 1] + getInsertCost()
-        val diag = matrix[row - 1][column - 1] + getLetterCost(charA, charB)
-        return Math.min(Math.min(top, left), diag)
     }
 
 }
