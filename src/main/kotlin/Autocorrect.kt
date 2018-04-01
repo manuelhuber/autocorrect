@@ -16,15 +16,11 @@ class Autocorrect {
      * @param input word for which to suggests corrections / completions
      * @param m max cost
      * @param numberOfSuggestions
-     * @param lambda math stuff
-     * @param z math stuff
      * @return a list of Pair<suggestedWord, editDistance>
      */
     fun getSuggestions(input: String,
                        m: Double,
-                       numberOfSuggestions: Int,
-                       lambda: Double = 0.1,
-                       z: Double = 1.0): List<Suggestion> {
+                       numberOfSuggestions: Int): List<Suggestion> {
         val date = Date()
         val value = dictionary.keys
                 // Remove words that are too short
@@ -32,10 +28,7 @@ class Autocorrect {
                 // calculate the distances etc
                 .map { s ->
                     val distance = wordDistanceTree.distance(input, s)
-                    // Do some math
-                    // TODO: calculate a proper score - currently it's garbage
-                    val score = -lambda * z * distance + Math.log(dictionary[s]!!.toDouble())
-                    Suggestion(s, score, distance, dictionary[s]!!)
+                    Suggestion(s, distance, dictionary[s]!!)
                 }
                 .sortedWith(compareBy<Suggestion> { it.distance }.thenByDescending { it.occurences })
                 .take(numberOfSuggestions)
@@ -52,7 +45,6 @@ class Autocorrect {
                 .inputStream()
                 .bufferedReader()
                 .use(BufferedReader::readText)
-        val dic: MutableMap<String, Int> = mutableMapOf()
         val foldFun: (MutableMap<String, Int>, String) -> MutableMap<String, Int> = { dictionary, line ->
             val parsedLine = line.split('\t')
             if (parsedLine.size == 2) {
@@ -60,6 +52,6 @@ class Autocorrect {
             }
             dictionary
         }
-        return inputString.lineSequence().fold(dic, foldFun)
+        return inputString.lineSequence().fold(mutableMapOf(), foldFun)
     }
 }
