@@ -7,12 +7,10 @@ fun getDeleteCost(): Int {
 }
 
 fun getLetterCost(a: Char, b: Char): Int {
-    //  Todo rework this - a letter that is 2 columns & 2 rows away should have a higher cost
     return when (letterDistance(a, b)) {
         0 -> 0
         1 -> 1
-        2 -> 2
-        else -> 5
+        else -> 4
     }
 }
 
@@ -21,6 +19,12 @@ val row2 = listOf('a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ö', 'ä')
 val row3 = listOf('<', 'y', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.')
 val rowOfRows = listOf(row1, row2, row3)
 
+/**
+ * Returns the distance "as the crow flies" (diagonal distance counts as much as vertical / horizontal distance)
+ * Example:
+ * If the letters are on the same row but on columns next to each other the distance is 1
+ * If the letters are offset by 1 in row and column the total distance is still 1 (since the diagonal distance is 1)
+ */
 fun letterDistance(a: Char, b: Char): Int {
     val dataA = getData(a)
     val dataB = getData(b)
