@@ -44,7 +44,7 @@ class App : JPanel(GridBagLayout()) {
     }
 
     private fun showCorrections() {
-        textArea.text = autoCorrect.getSuggestions(textField.text, 2.0, 3)
+        textArea.text = autoCorrect.getSuggestions(textField.text, 2.0, 3, false)
                 .joinToString("\n")
     }
 

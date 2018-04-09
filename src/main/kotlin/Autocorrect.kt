@@ -20,15 +20,16 @@ class Autocorrect {
      */
     fun getSuggestions(input: String,
                        m: Double,
-                       numberOfSuggestions: Int): List<Suggestion> {
+                       numberOfSuggestions: Int,
+                       slow: Boolean): List<Suggestion> {
         val date = Date()
         val value = dictionary.keys
-                // Remove words that are too short
-                .filter { s -> s.length > input.length || Math.abs(s.length - input.length) < m }
-                // calculate the distances etc
-                .map { s ->
-                    val distance = wordDistanceTree.distance(input, s)
-                    Suggestion(s, distance, dictionary[s]!!)
+                // Remove words that are too short - longer words will be kept to allow for autocomplete
+                .filter { word -> word.length > input.length || Math.abs(word.length - input.length) < m }
+                .map { word ->
+                    // calculate the distances etc
+                    val distance = if (slow) distance(input, word) else wordDistanceTree.distance(input, word)
+                    Suggestion(word, distance, dictionary[word]!!)
                 }
                 .sortedWith(compareBy<Suggestion> { it.distance }.thenByDescending { it.occurences })
                 .take(numberOfSuggestions)
