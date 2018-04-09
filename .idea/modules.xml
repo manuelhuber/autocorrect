@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/autocomplete.iml" filepath="$PROJECT_DIR$/.idea/autocomplete.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/autocorrect.iml" filepath="$PROJECT_DIR$/.idea/modules/autocorrect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/autocorrect.iml" filepath="$PROJECT_DIR$/autocorrect.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/autocorrect_main.iml" filepath="$PROJECT_DIR$/.idea/modules/autocorrect_main.iml" group="autocorrect" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/autocorrect_test.iml" filepath="$PROJECT_DIR$/.idea/modules/autocorrect_test.iml" group="autocorrect" />
     </modules>
