@@ -37,6 +37,6 @@ fun letterDistance(a: Char, b: Char): Int {
  * returns a pair<rowNumber, columnNumber>
  */
 fun getData(a: Char): Pair<Int, Int> {
-    val row: List<Char> = rowOfRows.find { row -> row.indexOf(a) != -1 }!!
+    val row: List<Char> = rowOfRows.find { row -> row.indexOf(a.toLowerCase()) != -1 }!!
     return Pair(rowOfRows.indexOf(row), row.indexOf(a))
 }
