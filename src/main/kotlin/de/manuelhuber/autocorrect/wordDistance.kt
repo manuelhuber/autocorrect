@@ -1,3 +1,5 @@
+package de.manuelhuber.autocorrect
+
 fun distance(word1: String, word2: String): Int {
     val rowWord = word1.toLowerCase()
     val columnWord = word2.toLowerCase()

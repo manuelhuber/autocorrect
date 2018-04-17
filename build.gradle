@@ -2,7 +2,7 @@ group 'de.manuel_huber'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.1.4-3'
+    ext.kotlin_version = '1.2.31'
 
     repositories {
         mavenCentral()
@@ -19,8 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile group: 'io.reactivex.rxjava2', name: 'rxkotlin', version: '2.0.0'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'org.junit.jupiter:junit-jupiter-params:5.0.0'
 }
 

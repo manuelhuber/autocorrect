@@ -1,4 +1,4 @@
-package model
+package de.manuelhuber.autocorrect.model
 
 class Suggestion(val word: String,
                  var distance: Int,

@@ -1,4 +1,4 @@
-package model
+package de.manuelhuber.autocorrect.model
 
 class Row(val char: Char,
           val costs: MutableList<Int>,

@@ -1,4 +1,6 @@
-import model.Suggestion
+package de.manuelhuber.autocorrect
+
+import de.manuelhuber.autocorrect.model.Suggestion
 import java.util.*
 
 /**

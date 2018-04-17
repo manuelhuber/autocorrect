@@ -1,6 +1,8 @@
-import model.Row
-import util.fillMeUp
-import util.getOrFill
+package de.manuelhuber.autocorrect
+
+import de.manuelhuber.autocorrect.model.Row
+import de.manuelhuber.autocorrect.util.fillMeUp
+import de.manuelhuber.autocorrect.util.getOrFill
 
 /**
  * Calculates the distance ( =cost) between two words

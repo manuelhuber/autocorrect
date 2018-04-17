@@ -1,3 +1,5 @@
+package de.manuelhuber.autocorrect
+
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import javax.swing.*
@@ -57,7 +59,7 @@ class App : JPanel(GridBagLayout()) {
     companion object {
 
         private fun createAndShowGUI() {
-            val frame = JFrame("Autocorrect")
+            val frame = JFrame("de.manuelhuber.autocorrect.Autocorrect")
             frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
             frame.add(App())
             frame.pack()

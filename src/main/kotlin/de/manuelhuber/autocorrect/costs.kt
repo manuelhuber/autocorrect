@@ -1,3 +1,5 @@
+package de.manuelhuber.autocorrect
+
 fun getInsertCost(): Int {
     return 3
 }

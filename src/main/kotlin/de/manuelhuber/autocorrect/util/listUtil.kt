@@ -1,4 +1,4 @@
-package util
+package de.manuelhuber.autocorrect.util
 
 /**
  * Get the value at the given index or fill the list with values up to the index (and return the value at the index)

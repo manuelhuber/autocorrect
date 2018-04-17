@@ -1,3 +1,7 @@
+import de.manuelhuber.autocorrect.WordDistanceTree
+import de.manuelhuber.autocorrect.getDeleteCost
+import de.manuelhuber.autocorrect.getInsertCost
+import de.manuelhuber.autocorrect.getLetterCost
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -9,6 +13,7 @@ class WordDistanceTreeTest {
         assertEquals(0, tree.distance("ablaze", "ablaze"))
         assertEquals(0, tree.distance("", ""))
         assertEquals(0, tree.distance("x", "X"))
+        assertEquals(0, getLetterCost('x', 'X'))
         assertEquals(0, tree.distance("X", "x"))
     }
 
@@ -97,7 +102,7 @@ class WordDistanceTreeTest {
     fun autocompleteUnnecessaryLetter() {
         val tree = WordDistanceTree()
         // This could either be deletion (+free insert) or replace letters - the algorithm will take the lower one
-        assertEquals(getDeleteCost(), tree.distance("abll", "ablazeasdasdasdasdasdasdasdasd"))
+        assertEquals(Math.min(getDeleteCost(), getLetterCost('l','a')), tree.distance("abll", "ablazeasdasdasdasdasdasdasdasd"))
     }
 
 }
