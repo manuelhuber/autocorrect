@@ -8,7 +8,7 @@ import javax.swing.event.DocumentListener
 class App : JPanel(GridBagLayout()) {
     private var textField: JTextField = JTextField(100)
     private var textArea: JTextArea = JTextArea(10, 100)
-    private var autoCorrect: Autocorrect = Autocorrect()
+    private var autoCorrect: Autocorrect = Autocorrect(DictionaryLoader())
 
     init {
         initGui()

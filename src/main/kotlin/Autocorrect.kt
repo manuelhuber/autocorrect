@@ -1,13 +1,11 @@
 import model.Suggestion
-import java.io.BufferedReader
-import java.io.File
 import java.util.*
 
 /**
  * Generates corrections for the given word based on a dictionary
  */
-class Autocorrect {
-    private var dictionary: Map<String, Int> = loadDictionary()!!
+class Autocorrect(dictionaryLoader: DictionaryLoader) {
+    private var dictionary: Map<String, Int> = dictionaryLoader.getDictionary()!!
     private val wordDistanceTree = WordDistanceTree()
 
     /**
@@ -38,21 +36,4 @@ class Autocorrect {
         return value
     }
 
-    /**
-     * Loads the file with word counts to create a map with words and their number of uses
-     */
-    private fun loadDictionary(): Map<String, Int>? {
-        val inputString = File("src/resources/count_big.txt")
-                .inputStream()
-                .bufferedReader()
-                .use(BufferedReader::readText)
-        val foldFun: (MutableMap<String, Int>, String) -> MutableMap<String, Int> = { dictionary, line ->
-            val parsedLine = line.split('\t')
-            if (parsedLine.size == 2) {
-                dictionary[parsedLine[0]] = parsedLine[1].toInt()
-            }
-            dictionary
-        }
-        return inputString.lineSequence().fold(mutableMapOf(), foldFun)
-    }
 }
