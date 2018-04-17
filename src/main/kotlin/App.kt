@@ -9,6 +9,7 @@ class App : JPanel(GridBagLayout()) {
     private var textField: JTextField = JTextField(100)
     private var textArea: JTextArea = JTextArea(10, 100)
     private var autoCorrect: Autocorrect = Autocorrect(DictionaryLoader())
+    private var slow = true
 
     init {
         initGui()
@@ -21,6 +22,11 @@ class App : JPanel(GridBagLayout()) {
         constraints.gridwidth = GridBagConstraints.REMAINDER
 
         constraints.fill = GridBagConstraints.HORIZONTAL
+
+        val b = JToggleButton("Use Cache Tree")
+        b.addActionListener({ slow = !b.isSelected })
+
+        add(b, constraints)
         add(textField, constraints)
 
         constraints.fill = GridBagConstraints.BOTH
@@ -44,7 +50,7 @@ class App : JPanel(GridBagLayout()) {
     }
 
     private fun showCorrections() {
-        textArea.text = autoCorrect.getSuggestions(textField.text, 2.0, 3, false)
+        textArea.text = autoCorrect.getSuggestions(textField.text, 2.0, 3, slow)
                 .joinToString("\n")
     }
 
